@@ -1,0 +1,51 @@
+
+- !policy
+  id: conjur/authn-k8s/conjur-k8s
+  body:
+
+  - !variable kubernetes/service-account-token
+  - !variable kubernetes/ca-cert
+  - !variable kubernetes/api-url
+  - !variable ca/key
+  - !variable ca/cert
+  - !webservice
+
+  - !policy
+    id: apps
+    body:
+
+    - !layer
+
+    - &authenticated-resources
+      - !host
+        id: test-app
+        annotations:
+          authn-k8s/namespace: conjur-dev
+          authn-k8s/service-account: conjur-cluster
+          authn-k8s/authentication-container-name: authenticator
+
+    - !grant
+      role: !layer
+      members: *authenticated-resources
+
+  - !permit
+    role: !layer apps
+    privilege: [ authenticate ]
+    resource: !webservice
+
+- !policy
+  id: conjur/seed-generation
+  body:
+
+  - !webservice
+
+  - !layer consumers
+
+  - !permit
+    role: !layer consumers
+    privilege: [ "execute" ]
+    resource: !webservice
+
+- !grant
+  role: !layer conjur/seed-generation/consumers
+  member: !host conjur/authn-k8s/conjur-k8s/apps/test-app
