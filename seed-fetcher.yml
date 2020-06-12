@@ -1,0 +1,21 @@
+# =================================================
+# == Create seed-service client identity for Follower initialization
+# =================================================
+
+# Define Follower host identity for authentication service in CyberArk namespace
+- !host
+  id: lab/dap-authn-service
+  annotations:
+    authn-k8s/namespace: cybrlab
+    authn-k8s/service_account/name: dap-authn-service
+    authn-k8s/authentication-container-name: authenticator
+
+# Grant roles that gives Follower host identity permission to:
+#  - authenticate to the cluster authn-k8s endpoint
+#  - execute the seed-generation webservice
+- !grant
+  roles:
+  - !group conjur/authn-k8s/lab/consumers
+  - !group conjur/seed-generation/consumers
+  members:
+  - !host lab/dap-authn-service
