@@ -19,7 +19,7 @@ DAP_HOSTNAME="las1app2461xrv.ampf.com" # Public Hostname of DAP master [cluster]
 DAP_AUTHN_K8S_BRANCH="eks-dev"
 
 K8S_FOLLOWER_REPLICA_COUNT="2"
-K8S_FOLLOWER_SVC_ACCT="conjur-cluster"
+K8S_FOLLOWER_SVC_ACCT="authn-k8s_svc"
 K8S_FOLLOWER_APP_LABEL="conjur-follower"
 K8S_FOLLOWER_LOGIN="host/conjur/authn-k8s/$DAP_AUTHN_K8S_BRANCH/apps/$K8S_FOLLOWER_NS/service_account/$K8S_FOLLOWER_SVC_ACCT"
 
