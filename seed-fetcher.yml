@@ -6,7 +6,7 @@
 - !host
   id: lab/dap-authn-service
   annotations:
-    authn-k8s/namespace: cybrlab
+    authn-k8s/namespace: conjur-dev
     authn-k8s/service_account/name: dap-authn-service
     authn-k8s/authentication-container-name: authenticator
 
