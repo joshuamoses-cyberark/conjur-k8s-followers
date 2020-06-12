@@ -1,0 +1,18 @@
+    # =================================================
+    # Create webservice and consumers role for the Seed Service
+    # Note 4-space indentation – this is created “under” the authn-k8s policy
+    # =================================================
+    - !policy
+      id: seed-generation
+      body:
+      - !webservice
+
+      # Hosts that generate seeds become members of the
+      # `consumers` layer.
+      - !group consumers
+
+      # Authorize `consumers` to request seeds
+      - !permit
+        role: !group consumers
+        privilege: [ "execute" ]
+        resource: !webservice
