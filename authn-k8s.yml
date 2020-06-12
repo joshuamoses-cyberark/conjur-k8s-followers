@@ -20,7 +20,7 @@
 
     - !webservice
       annotations:
-        description: authn service for cluster lab
+        description: authn service for cluster
 
     # Hosts that can authenticate become members of the
     # `consumers` group.
