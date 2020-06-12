@@ -1,21 +1,21 @@
-DAP_ACCT="demo"
+DAP_ACCT="dapdev"
 DAP_USER="admin"
 DAP_PASS=""
 
 K8S_FOLLOWER_NS="conjur-dev"
-CONJUR_VERSION="10.10"
+CONJUR_VERSION="11.4.0"
 
 CONJUR_APPLIANCE_FILE="conjur-appliance_$CONJUR_VERSION.tar.gz"
 CONJUR_APPLIANCE_IMG="registry.tld/conjur-appliance:$CONJUR_VERSION"
 
-ECR_BASE_URI="440956151592.dkr.ecr.us-east-1.amazonaws.com"
+ECR_BASE_URI="localhost"
 
 SEED_FETCHER_REPO="$ECR_BASE_URI/seed-fetcher:$K8S_FOLLOWER_NS"
 CONJUR_APPLIANCE_REPO="$ECR_BASE_URI/conjur-appliance:$CONJUR_VERSION"
 
-DAP_INTERNAL_IP="172.31.35.124"  # IP for SSH access to DAP master
+DAP_INTERNAL_IP="172.17.0.2"  # IP for SSH access to DAP master
 DAP_SSH_KEY=~/.ssh/DAPDemo.pem 
-DAP_HOSTNAME="ec2-100-24-56-192.compute-1.amazonaws.com" # Public Hostname of DAP master [cluster]
+DAP_HOSTNAME="las1app2461xrv.ampf.com" # Public Hostname of DAP master [cluster]
 DAP_AUTHN_K8S_BRANCH="eks-dev"
 
 K8S_FOLLOWER_REPLICA_COUNT="2"
