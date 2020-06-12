@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
-AUTHENTICATOR_ID='lab'
-CONJUR_ACCOUNT='lab'
+AUTHENTICATOR_ID='authn-k8s_svc'
+CONJUR_ACCOUNT='dapdev'
 # Generate OpenSSL private key
 openssl genrsa -out ca.key 2048
 CONFIG="
