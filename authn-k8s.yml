@@ -1,33 +1,37 @@
 # =================================================
-  # Creates variables, webservice and consumers role for K8s authentication
-  # Note 2-space indentation – this is created “under” the conjur policy
-  # =================================================
-  - !policy
-    id: authn-k8s/lab
-    owner: !host /authn-k8s_svc
+# Creates variables, webservice and consumers role for K8s authentication
+# Note 2-space indentation – this is created “under” the conjur policy
+# Service Account: dap-authn-service
+# Namespace: dap-namespace
+# Authenticator: dap-authenticator
+# 
+# =================================================
+- !policy
+  id: conjur/authn-k8s/prod
+  owner: !host /authn-k8s
+  annotations:
+    description: authn-k8s defs for the cluster
+  body:
+
+  # vars for ocp/k8s api url & access creds
+  - !variable kubernetes/service-account-token
+  - !variable kubernetes/ca-cert
+  - !variable kubernetes/api-url
+
+  # vars for CA for this authenticator ID
+  - !variable ca/cert
+  - !variable ca/key
+
+  - !webservice
     annotations:
-      description: authn-k8s defs for the cluster
-    body:
+      description: authn service for cluster
 
-    # vars for ocp/k8s api url & access creds
-    - !variable kubernetes/service-account-token
-    - !variable kubernetes/ca-cert
-    - !variable kubernetes/api-url
+  # Hosts that can authenticate become members of the
+  # `consumers` group.
+  - !group consumers
 
-    # vars for CA for this authenticator ID
-    - !variable ca/cert
-    - !variable ca/key
-
-    - !webservice
-      annotations:
-        description: authn service for cluster
-
-    # Hosts that can authenticate become members of the
-    # `consumers` group.
-    - !group consumers
-
-    # Grant consumers group role authentication privileges
-    - !permit
-      role: !group consumers
-      privilege: [ read, authenticate ]
-      resource: !webservice
+  # Grant consumers group role authentication privileges
+  - !permit
+    role: !group consumers
+    privilege: [ read, authenticate ]
+    resource: !webservice
