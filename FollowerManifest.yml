@@ -1,0 +1,130 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dap-follower
+  namespace: dap-namespace
+  labels:
+    app: dap-follower
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: access
+  template:
+    metadata:
+      labels:
+        role: access
+    spec:
+      serviceAccountName: dap-authn-service
+      volumes:
+      - name: seedfile
+        emptyDir:
+          medium: Memory
+      - name: conjur-token
+        emptyDir:
+          medium: Memory
+      initContainers:
+      - name: dap-authenticator
+        image: cyberark/dap-seedfetcher:latest
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: CONJUR_SEED_FILE_URL
+            value: https://mymacbook.myorg.local/configuration/myorg/seed/follower
+          - name: SEEDFILE_DIR
+            value: /tmp/seedfile
+          - name: FOLLOWER_HOSTNAME
+            value: dap-follower
+          - name: AUTHENTICATOR_ID
+            value: prod
+          - name: CONJUR_ACCOUNT
+            value: myorg
+          - name: CONJUR_SSL_CERTIFICATE
+            valueFrom:
+              configMapKeyRef:
+                name: server-certificate
+                key: ssl-certificate
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: CONJUR_AUTHN_LOGIN
+            value: "host/dap-authn-service"
+        volumeMounts:
+          - name: seedfile
+            mountPath: /tmp/seedfile
+          - name: conjur-token
+            mountPath: /run/conjur
+      containers:
+      - name: node
+        imagePullPolicy: IfNotPresent
+        image: registry.tld/conjur-appliance:11.4.0
+        command: ["/tmp/seedfile/start-follower.sh"]
+        env:
+          - name: CONJUR_AUTHENTICATORS
+            value: "authn-k8s/prod"
+          - name: SEEDFILE_DIR
+            value: /tmp/seedfile
+        ports:
+          - containerPort: 443
+            protocol: TCP
+          - containerPort: 5432
+            protocol: TCP
+          - containerPort: 1999
+            protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 443
+            scheme: HTTPS
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+        volumeMounts:
+          - name: seedfile
+            mountPath: /tmp/seedfile
+            readOnly: true
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "500m"
+            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: access
+  namespace: dap-namespace
+spec:
+  ports:
+  - name: https
+    port: 443
+    targetPort: 443
+  selector:
+    role: access
+  type: ClusterIP
+
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dap-follower
+  namespace: dap-namespace
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dap-follower
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 10

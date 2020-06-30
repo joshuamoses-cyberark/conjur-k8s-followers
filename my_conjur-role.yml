@@ -1,0 +1,49 @@
+# conjur-role.yml
+# Service Account: dap-authn-service
+# Namespace: dap-namespace
+# Authenticator: dap-authenticator
+# App Label: app-conjur
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dap-namespace
+  labels:
+    name: dap-namespace
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dap-authn-service
+  namespace: dap-namespace
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dap-authenticator
+rules:
+- apiGroups: [""]
+  resources: ["pods", "serviceaccounts"]
+  verbs: ["get", "list"]
+- apiGroups: ["extensions"]
+  resources: [ "deployments", "replicasets"]
+  verbs: ["get", "list"]
+- apiGroups: ["apps"]
+  resources: [ "deployments", "statefulsets", "replicasets"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create", "get"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dap-authenticator
+subjects:
+- kind: ServiceAccount
+  name: dap-authn-service
+  namespace: dap-namespace
+roleRef:
+  kind: ClusterRole
+  name: dap-authenticator
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,5 @@
+---
+- &hosts
+  - !host 
+    id: authn-k8s
+...
