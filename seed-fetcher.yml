@@ -4,18 +4,18 @@
 
 # Define Follower host identity for authentication service in CyberArk namespace
 - !host
-  id: lab/dap-authn-service
+  id: dap-authn-service
   annotations:
-    authn-k8s/namespace: conjur-dev
+    authn-k8s/namespace: dap-namespace
     authn-k8s/service_account/name: dap-authn-service
-    authn-k8s/authentication-container-name: authenticator
+    authn-k8s/authentication-container-name: dap-authenticator
 
 # Grant roles that gives Follower host identity permission to:
 #  - authenticate to the cluster authn-k8s endpoint
 #  - execute the seed-generation webservice
 - !grant
   roles:
-  - !group conjur/authn-k8s/lab/consumers
+  - !group conjur/authn-k8s/prod/consumers
   - !group conjur/seed-generation/consumers
   members:
-  - !host lab/dap-authn-service
+  - !host dap-authn-service
