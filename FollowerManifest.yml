@@ -30,7 +30,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
           - name: CONJUR_SEED_FILE_URL
-            value: https://mymacbook.myorg.local/configuration/myorg/seed/follower
+            value: https://mymacbook.myorg.local/configuration/myorg/seed/follower #channge mymacbook.myorg.local to your fqdn and /myorg/ to your conjur acct
           - name: SEEDFILE_DIR
             value: /tmp/seedfile
           - name: FOLLOWER_HOSTNAME
