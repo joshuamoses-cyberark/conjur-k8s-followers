@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 AUTHENTICATOR_ID=prod
-CONJUR_ACCOUNT=QADAP
+CONJUR_ACCOUNT=myorg
 
 # Generate OpenSSL private key
 openssl genrsa -out ca.key 2048
